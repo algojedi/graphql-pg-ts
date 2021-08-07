@@ -1,0 +1,12 @@
+node_modules/
+
+build/
+
+
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+
+
