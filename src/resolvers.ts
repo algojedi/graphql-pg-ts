@@ -5,6 +5,7 @@ import { IResolvers } from 'apollo-server-express'
 import * as bcrypt from 'bcryptjs'
 import { pool } from './database/db'
 import { MyContext, ReturnedUser, Todo } from './tsTypes'
+import { userResolver } from './userResolver'
 
 interface RegisterInput {
     email: string
@@ -27,46 +28,27 @@ type User = {
 
 type UserResult = User | null // can also include error types
 
-
 // const someDummy: ReturnedUser = { email: 'John@john.com', id: 58 }
 
 export const resolvers: IResolvers = {
-   User: {
-    firstLetterOfEmail: (parent: { email: any[] }) => {  // WE'RE ONLY USING THE FIRST ARG HERE PASSED TO THE FIELD: PARENT
-      return parent.email ? parent.email[0] : null;  // DERIVED FIELD: GETS RESOLVED IN THIS WAY
-    }
-    // username: parent => { return parent.username;
-    // }
-  }, 
-    
+    User: {
+        firstLetterOfEmail: (parent: { email: any[] }) => {
+            // WE'RE ONLY USING THE FIRST ARG HERE PASSED TO THE FIELD: PARENT
+            return parent.email ? parent.email[0] : null // DERIVED FIELD: GETS RESOLVED IN THIS WAY
+        }
+        // username: parent => { return parent.username;
+        // }
+    },
+
     Query: {
         hello: (): Person => {
             return { name: 'ashoo', age: 14 }
         },
-        user: async (
-            _: any,
-            { id }: { id: number }
-        ): Promise<ReturnedUser | null> => {
-            const text = 'select email, id from app_user where id = $1'
-            const values = [id]
-            try {
-                const res = await pool.query(text, values)
-                //    return res.rows[0]
-                if (res.rowCount == 0) {
-                    console.log('nothing returned from db query')
-                    return null
-                }
-                console.log({ response: res.rows[0] })
-                return res.rows[0]
-            } catch (error) {
-                console.log({ error })
-                return null
-            }
-        },
 
-        todos: async () : Promise<Todo[] | null> => {
-            const text =
-                'select * from todo'
+        user: userResolver,
+
+        todos: async (): Promise<Todo[] | null> => {
+            const text = 'select * from todo'
             try {
                 const res = await pool.query(text)
                 console.log({ res: res.rows })
@@ -78,11 +60,10 @@ export const resolvers: IResolvers = {
         },
 
         todosByUser: async (
-         _: any,
+            _: any,
             { id }: { id: number }
-        ) : Promise<Todo[] | null> => {
-            const text =
-                'select title from todo where creator_id = $1'
+        ): Promise<Todo[] | null> => {
+            const text = 'select title from todo where creator_id = $1'
             const values = [id]
             try {
                 const res = await pool.query(text, values)
