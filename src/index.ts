@@ -24,27 +24,6 @@ const startServer = async () => {
     })
 
     const app = express()
-    // const RedisStore = connectRedis(session)
-    // const redisClient = redis.createClient()
-
-    // app.use(
-    //     session({
-    //         name: 'graphcookie',
-    //         saveUninitialized: false,
-    //         store: new RedisStore({
-    //             client, //: redisClient,
-    //             disableTouch: true
-    //         }),
-    //         cookie: {
-    //             maxAge: 100 * 60 * 60 * 24 * 365 * 10,
-    //             httpOnly: true,
-    //             secure: false,
-    //             sameSite: 'lax'
-    //         },
-    //         secret: 'secret',
-    //         resave: false
-    //     })
-    // )
     const RedisStore = connectRedis(session)
     app.use(
         session({
