@@ -18,6 +18,10 @@ export const typeDefs = gql`
         firstLetterOfEmail: String
     }
 
+    type UserResult {
+        email: String!
+    }
+
     type Todo {
         title: String!
         content: String!
@@ -35,7 +39,7 @@ export const typeDefs = gql`
 
     type Mutation {
         register(email: String!, password: String!) : Boolean!
-        login(email: String!, password: String!) : String
+        login(email: String!, password: String!) : UserResult
     }
 
 `

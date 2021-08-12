@@ -1,10 +1,7 @@
-// import * as bcrypt from "bcryptjs";
-// import { AppUser } from "./entity/AppUser";
-// import { IResolvers } from 'graphql-tools' // 'apollo-server-express'
 import { IResolvers } from 'apollo-server-express'
 import * as bcrypt from 'bcryptjs'
 import { pool } from './database/db'
-import { MyContext, ReturnedUser, Todo } from './tsTypes'
+import { MyContext, Todo } from './tsTypes'
 import { userResolver } from './userResolver'
 
 interface RegisterInput {
@@ -88,8 +85,9 @@ export const resolvers: IResolvers = {
                 'INSERT INTO app_user(email, password) VALUES($1, $2) RETURNING *'
             const values = [email, hashedPassword]
             try {
-                const res = await pool.query(text, values)
-                console.log({ res: res.rows })
+                // const res = await pool.query(text, values)
+                await pool.query(text, values)
+                // console.log({ res: res.rows })
                 return true
             } catch (err) {
                 console.log(err.stack)
@@ -110,7 +108,7 @@ export const resolvers: IResolvers = {
                 const result = await pool.query(text, values)
                 if (result.rowCount == 0)
                     throw new Error('Incorrect email or password')
-                console.log({ res: result.rows[0] })
+                console.log({ loginPGresponse: result.rows[0] })
                 const valid = await bcrypt.compare(
                     password,
                     result.rows[0].password
